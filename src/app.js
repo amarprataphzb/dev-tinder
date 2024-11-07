@@ -1,21 +1,29 @@
-
-const express = require('express');
+const express = require("express");
 const app = express();
 
-app.use("/",(req,res)=>{
-    res.send("home page")
-})
+app.get("/user", (req, res) => {
+  res.send({ firstName: "Amar", lastName: "Pratap" });
+});
 
-app.use("/hello",(req,res)=>{
-    res.send("Hello from Hello route")
-})
+app.post("/user", (req, res) => {
+  // here is the code to submit the data to the backend
+  res.send("Data successfully registered");
+});
 
-app.use("/test",(req,res)=>{
-    res.send("Hello from Hello test route")
-})
+app.delete("/user", (req, res) => {
+    // here is the code to submit the data to the backend
+    res.send("Delete successfully");
+  });
 
+  app.put("/user", (req, res) => {
+    // here is the code to submit the data to the backend
+    res.send("data updated successfully");
+  });
+  app.patch("/user", (req, res) => {
+    // here is the code to submit the data to the backend
+    res.send("data patched successfully");
+  });
 
-
-app.listen(3000,()=>{
-    console.log('Server is listening on port 3000');
-})
+app.listen(3000, () => {
+  console.log("Server is listening on port 3000");
+});
