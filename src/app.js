@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+const {adminAuth,userAuth}=require('./middleware/auth')
+
 // app.get("/user", (req, res) => {
 
 //   res.send({ firstName: "Amar", lastName: "Pratap" });
@@ -61,15 +63,17 @@ const app = express();
 
 //Episode -5 
 
+
+app.use("/admin",adminAuth)
+app.use("/user",userAuth)
+
 app.get("/admin/getAllData", (req, res)=>{
   //logic of checking the request is authorized
-  const token="xyzgsthyjuikjhgf"
-  const isAdminAuthorized =token==="xyz";
-  if(isAdminAuthorized){
-    res.send("Get All Data")
-  }else{
-    res.send("Unauthorized")
-  }
+   res.send("All Data sent")
+})
+
+app.get('/user',userAuth, (req, res)=>{
+  res.send("user route is calling")
 })
 
 app.get("/admin/deleteUser",(req,res)=>{
@@ -77,5 +81,5 @@ app.get("/admin/deleteUser",(req,res)=>{
 })
 
 app.listen(8080, () => {
-  console.log("Server is listening on port 8080");
+  console.log("Server is listening on port 8080"); 
 });
