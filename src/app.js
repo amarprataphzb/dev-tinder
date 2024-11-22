@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-const {adminAuth,userAuth}=require('./middleware/auth')
+// const {adminAuth,userAuth}=require('./middleware/auth')
 
 // app.get("/user", (req, res) => {
 
@@ -59,27 +59,125 @@ const {adminAuth,userAuth}=require('./middleware/auth')
 //   }
 // );
 
+//Episode -5
 
+// app.use("/admin",adminAuth)
+// app.use("/user",userAuth)
 
-//Episode -5 
+// app.get("/admin/getAllData", (req, res)=>{
+//   //logic of checking the request is authorized
+//    res.send("All Data sent")
+// })
 
+// app.get('/user',userAuth, (req, res)=>{
+//   res.send("user route is calling")
+// })
 
-app.use("/admin",adminAuth)
-app.use("/user",userAuth)
+// app.get("/admin/deleteUser",(req,res)=>{
+//     res.send("Deleted a user")
+// })
 
-app.get("/admin/getAllData", (req, res)=>{
-  //logic of checking the request is authorized
-   res.send("All Data sent")
-})
+//error handling
+//  there are two ways to handle error in node js
+// alwats use try and  catch funtionality
 
-app.get('/user',userAuth, (req, res)=>{
-  res.send("user route is calling")
-})
+//1
+// app.use("/user",(err, req, res, next) => {
+//     if(err){
+//       res.status(500).send("Something went wrong")
+//     }
+// });
+// //2
+// app.use("/user",(req, res) => {
+//   try {
+//     throw new Error("User not found")
+//     res.send("User data sent")
+//   } catch (error) {
+//     res.status(500).send("Something went wrong")
+//   }
+// });
 
-app.get("/admin/deleteUser",(req,res)=>{
-    res.send("Deleted a user")
-})
+// episode - 6
 
-app.listen(8080, () => {
-  console.log("Server is listening on port 8080"); 
+const connectDB = require("./config/database");
+const User = require("./modals/user");
+require("./config/database");
+
+app.use(express.json());
+
+app.post("/signup", async (req, res) => {
+  //creating a new instance of user modal
+  const user = new User(req.body);
+
+  try {
+    await user.save();
+    res.send("User registered successfully");
+  } catch (error) {
+    res.status(500).send("Something went wrong");
+  }
 });
+
+// app.get("/user", async (req, res) => {
+//   const userEmail = req.body.email;
+
+//   try {
+
+//     const users=await User.findOne({email: userEmail});
+//     res.send(users)
+//     //const users = await User.find({ email: userEmail });
+//     // if (users.length === 0) {
+//     //   res.status(404).send("User not found");
+//     // } else {
+//     //   res.send(users);
+//     // }
+//   } catch (error) {
+//     res.status(400).send("something went wrong");
+//   }
+// });
+
+// app.get("/feed", async (req, res) => {
+//   try {
+//     const users = await User.find({});
+//     res.send(users);
+//   } catch (error) {
+//     res.status(400).send("something went wrong");
+//   }
+// });
+
+//epispde 7 -deleted
+
+app.delete("/users", async (req, res) => {
+  const userId = req.body.userId;
+
+  try {
+       const user=await User.findByIdAndDelete({_id: userId });
+    //const user = await User.findByIdAndDelete({ userId });
+
+    res.send("user deleted");
+  } catch (error) {
+    res.status(400).send("something went wrong");
+  }
+});
+
+app.patch("/users", async (req, res) => {
+  const userId = req.body.userId;
+  const data=req.body;
+
+  console.log("line166"+userId);
+  console.log("line167"+JSON.stringify(data));
+  try{
+      await User.findByIdAndUpdate({_id:userId,data},data)
+      res.send("user updated sucessfully")
+  }catch (error) {
+      res.status(400).send("something went wrong")
+  }
+});
+
+connectDB()
+  .then(() => {
+    console.log("database connection established");
+    app.listen(8080, () => {
+      console.log("Server is listening on port 8080");
+    });
+  })
+  .catch((err) => console.log("database connection error"));
